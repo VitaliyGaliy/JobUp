@@ -1,0 +1,28 @@
+https://github.com/css-modules/postcss-modules-values
+/* breakpoints.css */
+@value small: (max-width: 599px);
+@value medium: (min-width: 600px) and (max-width: 959px);
+@value large: (min-width: 960px);
+/* my-component.css */
+/* alias paths for other values or composition */
+@value colors: "./colors.css";
+/* import multiple from a single file */
+@value primary, secondary from colors;
+/* make local aliases to imported values */
+@value small as bp-small, large as bp-large from "./breakpoints.css";
+
+.header {
+  composes: text-primary from colors;
+  box-shadow: 0 0 10px secondary;
+}
+
+@media bp-small {
+  .header {
+    box-shadow: 0 0 4px secondary;
+  }
+}
+@media bp-large {
+  .header {
+    box-shadow: 0 0 20px secondary;
+  }
+}

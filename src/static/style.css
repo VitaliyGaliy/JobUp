@@ -1,0 +1,109 @@
+:global {
+  @import 'base';
+  @import '~normalize.css/normalize';
+
+  // Some best-practice CSS that's useful for most apps
+  // Just remove them if they're not what you want
+  html {
+    box-sizing: border-box;
+  }
+
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+  }
+
+  *,
+  *:before,
+  *:after {
+    box-sizing: inherit;
+  }
+}
+
+.tasksListWrapper{
+  position: absolute;
+  width: 300px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  z-index: 5;
+}
+
+.newTask{
+  width: 250px;
+  height: 30px;
+  background-color: white;
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px
+}
+
+.task{
+  width: 250px;
+  min-height: 50px;
+  background-color: white;
+  display:flex;
+  align-items: flex-start;
+  margin-top: 10px;
+  flex-direction: column;
+  padding: 10px;
+}
+
+p{
+  margin: 0;
+}
+
+.btnWrapper{
+  width: 100%;
+  display:flex;
+}
+
+.Btn{
+  padding: 3px 8px;
+  border-radius: 5px;
+  background-color: #4582ec;
+}
+
+
+.sideBar{
+  width: 400px;
+  top: 0;
+  height: 100%;
+  right: -400px;
+  position: fixed;
+  background-color: #fff;
+  z-index: 5;
+}
+
+.createTask{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.tasksDetail{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.tasksDetail>p{
+  margin: 5px;
+  border: 1px solid blue;
+  border-radius: 15px;
+  padding: 3px 7px;
+}
+
+.serviceTypeWrapper{
+  display: flex;
+  justify-content: space-between;
+}
+
+.serviceTypeItem{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
