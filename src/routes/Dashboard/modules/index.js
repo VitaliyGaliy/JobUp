@@ -25,28 +25,31 @@ export const newTask = () => (dispatch) => {
   dispatch({ type: 'NEW_TASK'})
 }
 
-export const setServiceType = (name, index) => (dispatch) => {
-  dispatch({ type: 'SET_SERVICE_TYPE', payload:{name,index}})
-}
 
-export const setServiceTask = (deskription) => (dispatch) => {
-  dispatch({ type: 'SET_SERVICE_TYPE_TASK', payload:deskription})
-}
 
 export const createTask = (sentence) => (dispatch) => {
   dispatch({ type: 'CREATE_TASK', payload:sentence})
 }
 
 export const editTask = (e) => (dispatch, getState) => {
-  return dispatch({ type: consts.EDIT_TASK, payload: e})
+  return dispatch({ type: 'EDIT_TASK', payload: e})
+}
+
+export const saveChanges = (e) => (dispatch, getState) => {
+  return dispatch({ type: 'SAVE_CHANGES', payload: e})
+}
+
+export const deleteTask = (e) => (dispatch, getState) => {
+  return dispatch({ type: 'DELETE_TASK', payload: e})
 }
 
 export const actions = {
   fetchAddress,
   newTask,
-  setServiceType,
-  setServiceTask,
-  createTask
+  editTask,
+  createTask,
+  saveChanges,
+  deleteTask
 }
 
 // ------------------------------------
@@ -58,10 +61,11 @@ const ACTION_HANDLERS = {
   FETCH_ADDRESS_SUCCESS: (state, action) => {
 
     const result = { ...state, isFetching: false }
-    if (action.payload) {
-      result.address = action.payload.results[0].formatted_address
-    }
 
+    if (action.payload) {
+      result.addressObj = {address: action.payload.results[0].formatted_address,
+                           location: action.payload.results[0].geometry.location}
+    }
     return result
   },
   FETCH_ADDRESS_FAILURE: (state) => ({ ...state, isLoading: false }),
@@ -69,33 +73,51 @@ const ACTION_HANDLERS = {
     const result = { ...state, openSideBar: true }
     return result
   },
-  SET_SERVICE_TYPE_TASK: (state, action) => {
-    const result = { ...state, description: action.payload }
-    return result
-  },
-  SET_SERVICE_TYPE: (state, action) => {
-    const result = { ...state, servise: action.payload }
-    return result
-  },
 
   CREATE_TASK: (state, action) => {
-    return{ ...state, tasks:[...state.tasks, {tasksText:action.payload}]}
+    return{ ...state, tasks:[...state.tasks, {task:action.payload}]}
   },
 
   EDIT_TASK: (state, action) => {
     console.log('action.payload', action.payload);
-    return{ ...state, tasks:[...state.tasks, {tasksText:action.payload}]}
+
+    const {description, index, name, sentence, addressObj} = action.payload;
+    return{ ...state, editTaskData: {description, index, name, sentence, addressObj},
+                      addressObj:addressObj,
+                      isEditing:true}
+  },
+  SAVE_CHANGES: (state, action) => {
+
+    const result = { ...state, isEditing:false }
+    const newTasks = state.tasks.map(t => {
+        if(t.task.index === action.payload.index) {
+          return {task: action.payload}
+        }else{
+          return t
+        }
+    })
+    result.tasks = newTasks;
+    result.editTaskData = newTasks;
+    return result
   },
 
+  DELETE_TASK: (state, action) => {
+    debugger
+    const tasks = state.tasks.filter(t => t.task.index !== action.payload.index)
+    return {...state, tasks, editTaskData:{}, addressObj:{address:''}}
+  },
 }
+
 
 // ------------------------------------
 // Reducer
 // ------------------------------------
 export const initialState = {
-  address: '',
+  addressObj: {},
   servise:{},
-  tasks:[]
+  tasks:[],
+  editTaskData:{},
+  isEditing:false
 }
 
 export default function itemReducer(state = initialState, action) {

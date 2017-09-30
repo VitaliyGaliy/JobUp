@@ -17,6 +17,13 @@ export class Map extends React.Component {
     this.onDragEnd = this.onDragEnd.bind(this)
   }
 
+  componentWillReceiveProps(nextProps){
+      if(nextProps.addressObj.location){
+        const {lat, lng} = nextProps.addressObj.location;
+        this.setState({lat, lng})
+      }
+  }
+
   onMapCreated(map) {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition((position) => {
