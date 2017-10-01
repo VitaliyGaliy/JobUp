@@ -2,7 +2,6 @@ import React, {Component} from 'react'
 import Helmet from 'react-helmet'
 import CreateAndEditeTask from './CreateAndEditeTask'
 
-
 import {data} from './data.js'
 
 class СreateTask extends Component {
@@ -10,6 +9,7 @@ class СreateTask extends Component {
     super()
     this.state={
       name:'',
+      _id:'',
       index:null,
       arrIndex:null,
       description:'',
@@ -18,12 +18,16 @@ class СreateTask extends Component {
   }
 
   componentWillMount() {
-
+    this.props.fetchTasks()
   }
 
   componentWillReceiveProps(nextProps) {
-      const {name, index, description, sentence, addressObj} = nextProps.editTaskData;
-      this.setState({name, index, description, sentence, addressObj:nextProps.addressObj})
+    if(nextProps.isEditing){
+      const {name, index, description, sentence, addressObj, _id} = nextProps.editTaskData;
+      this.setState({name, index, description, sentence, addressObj:nextProps.addressObj, _id})
+    }else if(nextProps.addressObj.address){
+      this.setState({addressObj:nextProps.addressObj})
+    }
   }
 
   setServiceType(name, arrIndex){

@@ -21,22 +21,48 @@ export const fetchAddress = (lat, lng, key) => (dispatch, getState) => {
   })
 }
 
+export const fetchTasks = () => (dispatch) => {
+  dispatch({
+    [CALL_API]: {
+      types: ['FETCH_TASKS_REQUEST', 'FETCH_TASKS_SUCCESS', 'FETCH_TASKS_FAILURE'],
+      endpoint: 'http://localhost:8000/api/tasks',
+      method: 'get',
+      headers: {"Content-Type": "application/json"}
+    },
+  })
+}
+
 export const newTask = () => (dispatch) => {
   dispatch({ type: 'NEW_TASK'})
 }
 
-
-
-export const createTask = (sentence) => (dispatch) => {
-  dispatch({ type: 'CREATE_TASK', payload:sentence})
+export const createTask = (task) => (dispatch, getState) => {
+  dispatch({
+    [CALL_API]: {
+      types: ['FETCH_TASK_REQUEST', 'FETCH_TASK_SUCCESS', 'FETCH_TASK_FAILURE'],
+      endpoint: 'http://localhost:8000/api/tasks',
+      method: 'post',
+      body: JSON.stringify({task}),
+      headers: {"Content-Type": "application/json"}
+    },
+  }).then(dispatch({ type: 'CREATE_TASK', payload:task}))
 }
 
 export const editTask = (e) => (dispatch, getState) => {
   return dispatch({ type: 'EDIT_TASK', payload: e})
 }
 
-export const saveChanges = (e) => (dispatch, getState) => {
-  return dispatch({ type: 'SAVE_CHANGES', payload: e})
+export const saveChanges = (t) => (dispatch, getState) => {
+  console.log('saveChanges', t);
+  dispatch({
+    [CALL_API]: {
+      types: ['FETCH_EDIT_TASK_REQUEST', 'FETCH_EDIT_TASK_SUCCESS', 'FETCH_EDIT_TASK_FAILURE'],
+      endpoint: `http://localhost:8000/api/tasks/${t._id}`,
+      method: 'put',
+      body: JSON.stringify({t}),
+      headers: {"Content-Type": "application/json"}
+    },
+  }).then(dispatch({ type: 'SAVE_CHANGES', payload: t}))
 }
 
 export const deleteTask = (e) => (dispatch, getState) => {
@@ -45,6 +71,7 @@ export const deleteTask = (e) => (dispatch, getState) => {
 
 export const actions = {
   fetchAddress,
+  fetchTasks,
   newTask,
   editTask,
   createTask,
@@ -57,32 +84,42 @@ export const actions = {
 // ------------------------------------
 const ACTION_HANDLERS = {
 
-  FETCH_ADDRESS_REQUEST: (state) => ({ ...state, isLoading: true }),
+  FETCH_ADDRESS_REQUEST: (state) => ({ ...state, isFetching: true }),
   FETCH_ADDRESS_SUCCESS: (state, action) => {
-
     const result = { ...state, isFetching: false }
-
     if (action.payload) {
       result.addressObj = {address: action.payload.results[0].formatted_address,
                            location: action.payload.results[0].geometry.location}
     }
     return result
   },
-  FETCH_ADDRESS_FAILURE: (state) => ({ ...state, isLoading: false }),
+  FETCH_ADDRESS_FAILURE: (state) => ({ ...state, isFetching: false }),
+
   NEW_TASK: (state, action) => {
     const result = { ...state, openSideBar: true }
     return result
   },
+
+  FETCH_TASKS_REQUEST: (state) => ({ ...state, isFetching: true }),
+  FETCH_TASKS_SUCCESS: (state, action) => {
+    const result = { ...state, isFetching: false }
+    console.log('action.payload', action.payload);
+    if (action.payload) {
+      result.tasks = action.payload.tasks;
+    }
+    return result
+  },
+  FETCH_TASKS_FAILURE: (state) => ({ ...state, isFetching: false }),
+
+
 
   CREATE_TASK: (state, action) => {
     return{ ...state, tasks:[...state.tasks, {task:action.payload}]}
   },
 
   EDIT_TASK: (state, action) => {
-    console.log('action.payload', action.payload);
-
-    const {description, index, name, sentence, addressObj} = action.payload;
-    return{ ...state, editTaskData: {description, index, name, sentence, addressObj},
+    const {description, index, name, sentence, addressObj, _id} = action.payload;
+    return{ ...state, editTaskData: {description, index, name, sentence, addressObj, _id},
                       addressObj:addressObj,
                       isEditing:true}
   },
@@ -102,7 +139,6 @@ const ACTION_HANDLERS = {
   },
 
   DELETE_TASK: (state, action) => {
-    debugger
     const tasks = state.tasks.filter(t => t.task.index !== action.payload.index)
     return {...state, tasks, editTaskData:{}, addressObj:{address:''}}
   },

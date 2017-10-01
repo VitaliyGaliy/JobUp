@@ -4,7 +4,6 @@ import Task from './Task.js'
 import AddTask from './AddTask.js'
 
 export const TasksList = (props) => {
-  console.log('props', props);
   return(
     <div className='tasksListWrapper'>
       <AddTask newTask={props.newTask}/>
