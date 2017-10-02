@@ -43,14 +43,13 @@ mongodb.MongoClient.connect(dbUrl, (err, db) => {
 
   app.put('/api/tasks/:_id', (req, res) => {
 
-      const {description, index, name, sentence, addressObj, _id } = req.body;
-      console.log('PUT', req.body)
+      const {description, index, name, sentence, addressObj} = req.body.t;
+      console.log('PU', req.params)
       db.collection('tasks').findOneAndUpdate(
         { _id: new mongodb.ObjectId(req.params._id) },
-        { $set: { description, index, name, sentence, addressObj, _id } },
-        {returnOriginal: false, upsert: true},
+        { $set: { description, index, name, sentence, addressObj } },
+        { returnOriginal: false },
         (err, result) => {
-          console.log('result', result);
           if (err) { res.status(500).json({ errors: { global: err }}); return; }
 
           res.json({ tasks: result.value });

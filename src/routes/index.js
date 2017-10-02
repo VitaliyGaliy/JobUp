@@ -25,6 +25,11 @@ export const createRoutes = (store) => ({
     })
   },
 
+  indexRoute: {
+    onEnter: (nextState, replace) => replace('/dashboard'),
+  },
+
+
 })
 
 export default createRoutes

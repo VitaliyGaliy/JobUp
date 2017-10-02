@@ -7,7 +7,7 @@ export const HomeView = () => (
   <div>
     <div className='container-fluid text-center'>
       <div className={classes.mainContainer}>
-        <h1>Instamood</h1>
+        <h1>JobUp</h1>
       </div>
     </div>
   </div>
